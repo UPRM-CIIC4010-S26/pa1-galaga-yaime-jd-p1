@@ -41,26 +41,37 @@ void Program::Update() {
 
     if (!startup && !paused && !gameOver && pauseFrames <= 0) {
         Enemy::ManageEnemies(player->hitBox);
+        if (Enemy::scoreToAdd > 0) {
+            AddScore(Enemy::scoreToAdd);
+            Enemy::scoreToAdd = 0;
+        }
         StdEnemy::attackReset();
         ManageEnemyRespawns();
         player->update();
 
-        for (std::pair<std::pair<float, float>, Enemy*> p : Enemy::enemies) {
+        for (std::pair<std::pair<float, float>, Enemy*>& p : Enemy::enemies) {
             if (p.second && HitBox::Collision(player->hitBox, p.second->hitBox)) {
-                p.second->health = 0;
+                p.second = nullptr;
                 PlayerReset();
-            }
+                break;
+            } 
         }
 
         for (Projectile& p : Projectile::projectiles) {
             p.update();
-
-            if (p.ID != 0 && HitBox::Collision(player->hitBox, p.hitBox)) {
+            if (p.ID != 0 && HitBox::Collision(player->hitBox, p.getHitBox())) {
                 PlayerReset();
+                break;
             }
         }
 
         if (lives <= 0 && pauseFrames <= 0) gameOver = true;
+        if (score >= scoreNextLife) {
+            if (lives < 5) {
+                lives++;
+            }
+            scoreNextLife += 1000;
+        }
         Projectile::CleanProjectiles();
         Projectile::ProjectileCollision();
     }
@@ -76,6 +87,7 @@ void Program::Draw() {
                        Rectangle{10.0f + i * 30, GetScreenHeight() - 30.0f, 20, 20},
                        Vector2{0, 0}, 0, WHITE);
     }
+    DrawScore();
 
     for (Projectile p : Projectile::projectiles) p.draw();
     for (std::pair<std::pair<float, float>, Enemy*>& p : Enemy::enemies) {
@@ -85,12 +97,25 @@ void Program::Draw() {
     if (startup) DrawStartup();
     if (paused) DrawPauseScreen();
     if (gameOver) DrawGameOver();
+    
+    
 }
-
+void Program::DrawScore() {
+    DrawText(TextFormat("Score: %i", score), GetScreenWidth() - 220, 10, 30, WHITE);
+}
 void Program::ManageEnemyRespawns() {
     delay = std::max(delay - 1, 0);
 
-    respawnCooldown -= 1;
+   if (score < 2000) {
+    respawnCooldown = respawnCooldown - 1;
+    }
+    else if (score < 4000) {
+        respawnCooldown = respawnCooldown - 2;
+    }
+    else {
+        respawnCooldown = respawnCooldown - 3;
+    }
+    
     if (respawnCooldown <= 0) {
         respawnCooldown = 1080;
         for (std::pair<std::pair<float, float>, Enemy*>& p : Enemy::enemies) {
@@ -154,6 +179,10 @@ void Program::KeyInputs() {
     if (!gameOver && !paused && IsKeyPressed('I')) startup = !startup;
     if (IsKeyPressed('H')) HitBox::drawHitbox = !HitBox::drawHitbox;
 
+    if (IsKeyPressed('K')) {
+        AddScore(500);
+    }
+
     if (gameOver && IsKeyPressed(KEY_ENTER)) {
         gameOver = false;
         Reset();
@@ -192,6 +221,8 @@ void Program::Reset() {
     delay = 0;
     lives = 3;
     pauseFrames = 0;
+    score = 0;
+    scoreNextLife = 1000;
 
     Enemy::enemies.push_back(std::pair<std::pair<float, float>, Enemy*>{
         std::pair<float, float>{350, 150},
@@ -213,3 +244,6 @@ void Program::Reset() {
         });
     }
 }
+ void Program::AddScore(int points) {
+        score += points;
+    }

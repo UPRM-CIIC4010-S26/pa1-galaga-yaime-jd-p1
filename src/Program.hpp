@@ -19,7 +19,8 @@ class Program {
         int delay = 0;
         int lives = 3;
         int pauseFrames = 0;
-
+        int score = 0;
+        int scoreNextLife = 1000;
         bool startup = true;
         bool paused = false;
         bool gameOver = false;
@@ -31,6 +32,8 @@ class Program {
         void Draw();
         void ManageEnemyRespawns();
         void DrawStartup();
+        void DrawScore();
+        void AddScore(int points);
         void DrawPauseScreen();
         void DrawGameOver();
         void KeyInputs();
