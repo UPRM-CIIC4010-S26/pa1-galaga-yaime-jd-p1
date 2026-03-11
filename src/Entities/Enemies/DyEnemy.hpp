@@ -6,13 +6,20 @@ class DyEnemy : public Enemy {
         float angle = 135;
         float aimAngle = 225;
         bool loop = false;
-
+        Rectangle spriteRect;
     public:
         DyEnemy(float x, float y) : Enemy(x, y) { 
             this->cooldown = GetRandomValue(90, 300);
             this->health = 1; 
             this->scoreValue = 250;
+            
+            if (GetRandomValue(0, 1) == 0) {                  
+                this->spriteRect = Rectangle{2, 128, 13, 14}; 
+            } else {                                          
+                this->spriteRect = Rectangle{2, 147, 13, 13}; 
+            }          
         }
+
 
         void draw() override;
         void update(std::pair<float, float> pos, HitBox target) override;

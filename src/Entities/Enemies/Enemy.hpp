@@ -3,6 +3,7 @@
 #include "Math.hpp"
 #include "ImageManager.hpp"
 #include "Animation.hpp"
+#include "SoundManager.hpp"
 #include <iostream>
 
 class Enemy {
@@ -60,6 +61,11 @@ class Enemy {
                         if (p2.ID != 1 && HitBox::Collision(p.second->hitBox, p2.getHitBox())) {
                             p.second->health--;
                             p2.del = true;
+                        if (p.second->health > 0) {       
+                                PlaySound(SoundManager::hit); 
+                            } else {                          
+                                PlaySound(SoundManager::dead);
+                            }    
                         }
                     }
 
