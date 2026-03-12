@@ -74,6 +74,12 @@ void Program::Update() {
         }
         Projectile::CleanProjectiles();
         Projectile::ProjectileCollision();
+        
+        // Bonus: Update floating score position and duration
+        if (Enemy::scoreTextFrames > 0) {
+            Enemy::scoreTextY -= 1;
+            Enemy::scoreTextFrames--;
+        }
     }
 }
 
@@ -88,18 +94,32 @@ void Program::Draw() {
                        Vector2{0, 0}, 0, WHITE);
     }
     DrawScore();
-
+    
     for (Projectile p : Projectile::projectiles) p.draw();
     for (std::pair<std::pair<float, float>, Enemy*>& p : Enemy::enemies) {
         if (p.second) p.second->draw();
     }
+    // Bonus: Display floating score text if enemy was recently destroyed
+    DrawFloatingScore();
 
     if (startup) DrawStartup();
     if (paused) DrawPauseScreen();
     if (gameOver) DrawGameOver();
-    
-    
 }
+// Bonus: Draws the floating score text on screen for a short time
+void Program::DrawFloatingScore() {
+    if (Enemy::scoreTextFrames > 0) {
+        DrawText(
+            TextFormat("+%i", Enemy::scoreTextValue),
+            (int)Enemy::scoreTextX,
+            (int)Enemy::scoreTextY,
+            20,
+            WHITE
+        );
+    }
+}
+
+
 void Program::DrawScore() {
     DrawText(TextFormat("Score: %i", score), GetScreenWidth() - 220, 10, 30, WHITE);
 }

@@ -26,6 +26,12 @@ class Enemy {
         inline static std::vector<std::pair<std::pair<float, float>, Enemy*>> enemies;
         inline static int scoreToAdd = 0;
 
+        // Bonus: Added variables for floating score text
+        inline static int scoreTextValue = 0;
+        inline static float scoreTextX = 0;
+        inline static float scoreTextY = 0;
+        inline static int scoreTextFrames = 0;
+
         int getScoreValue() {
         return scoreValue;
         }
@@ -71,6 +77,12 @@ class Enemy {
 
                     if (p.second->health <= 0) {
                         scoreToAdd = scoreToAdd + p.second->getScoreValue();
+                        // Save the score value and the enemy position and displays the floating score text
+                        scoreTextValue = p.second->getScoreValue();
+                        scoreTextX = p.second->position.first;
+                        scoreTextY = p.second->position.second;
+                        scoreTextFrames = 30;
+
                         Animation::animations.push_back(
                             Animation(p.second->position.first, p.second->position.second, 155, 0, 33, 33, 30, 30, 4, ImageManager::SpriteSheet)
                         );
