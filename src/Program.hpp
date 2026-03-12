@@ -25,6 +25,7 @@ class Program {
         bool paused = false;
         bool gameOver = false;
 
+
     public:
         Program();
         
@@ -39,6 +40,8 @@ class Program {
         void KeyInputs();
         void PlayerReset();
         void Reset();
+        //Bonus: Function declaration for drawing floating score text
+        void DrawFloatingScore();
           
         ~Program() {}
 };
